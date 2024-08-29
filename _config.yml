@@ -1,0 +1,37 @@
+# Site settings
+title: "егэ информатика"
+baseurl: "/ege" # the subpath of your site, e.g. /blog
+url: "https://h1de0us.github.io" # the base hostname & protocol for your site
+
+# Build settings
+markdown: kramdown
+theme: minima
+
+# Exclude from processing
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - node_modules
+  - vendor/bundle/
+  - vendor/cache/
+  - vendor/gems/
+  - vendor/ruby/
+
+# Plugins
+plugins:
+  - jekyll-feed
+  - jekyll-seo-tag
+
+# Collections
+collections:
+  notes:
+    output: true
+    permalink: /:collection/:name
+
+# Default layout for notes
+defaults:
+  - scope:
+      path: ""
+      type: "notes"
+    values:
+      layout: "post"
