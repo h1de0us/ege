@@ -11,5 +11,7 @@ title: "содержание"
 
 [задание 14: системы счисления]({{ site.baseurl }}{% link _notes/14.md %})
 
+[задание 16: рекурсия]({{ site.baseurl }}{% link _notes/16.md %})
+
 ---
 
