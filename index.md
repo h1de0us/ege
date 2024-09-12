@@ -9,5 +9,7 @@ title: "содержание"
 
 [задание 12: исполнители]({{ site.baseurl }}{% link _notes/12.md %})
 
+[задание 14: системы счисления]({{ site.baseurl }}{% link _notes/14.md %})
+
 ---
 
