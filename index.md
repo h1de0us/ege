@@ -13,5 +13,7 @@ title: "содержание"
 
 [задание 16: рекурсия]({{ site.baseurl }}{% link _notes/16.md %})
 
+[задание 13: ip-адреса]({{ site.baseurl }}{% link _notes/13.md %})
+
 ---
 
