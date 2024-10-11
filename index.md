@@ -15,6 +15,8 @@ title: "содержание"
 
 [задание 13: ip-адреса]({{ site.baseurl }}{% link _notes/13.md %})
 
+[задание 7: количество информации]({{ site.baseurl }}{% link _notes/7.md %})
+
 [разные полезные функции]({{ site.baseurl }}{% link _notes/utils.md %})
 
 ---
