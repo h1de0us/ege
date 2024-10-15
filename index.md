@@ -19,5 +19,7 @@ title: "содержание"
 
 [разные полезные функции]({{ site.baseurl }}{% link _notes/utils.md %})
 
+[симулятор работы с ip-адресами и масками]({{ site.baseurl }}{% link simulator/simulator.html %})
+
 ---
 

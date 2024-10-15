@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IP Address Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+        }
+        input, button {
+            margin: 10px 0;
+            padding: 8px;
+        }
+        .results, .visualization {
+            margin-top: 20px;
+        }
+        .binary-segment {
+            display: inline-block;
+            width: 12px; /* Reduced width to fit all bits */
+            text-align: center;
+        }
+        .network {
+            background-color: #add8e6; /* Light blue for network part */
+        }
+        .host {
+            background-color: #ffa500; /* Orange for host part */
+        }
+        .binary-row {
+            margin-bottom: 10px;
+        }
+        .label {
+            display: inline-block;
+            width: 120px; /* Set to the same width for both rows */
+            font-weight: bold;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>IP Address Simulator</h1>
+        <form id="ipForm">
+            <label for="ipAddress">IP Address:</label>
+            <input type="text" id="ipAddress" placeholder="e.g., 192.168.1.1" required><br>
+            <label for="subnetMask">Subnet Mask:</label>
+            <input type="text" id="subnetMask" placeholder="e.g., 255.255.255.0" required><br>
+            <button type="button" onclick="calculateNetwork()">Calculate</button>
+        </form>
+        <div class="visualization" id="visualization">
+            <!-- Visualization of the IP and mask will be displayed here -->
+        </div>
+        <div class="results" id="results">
+            <!-- Results will be displayed here -->
+        </div>
+    </div>
+
+    <script>
+        function calculateNetwork() {
+            const ip = document.getElementById("ipAddress").value;
+            const mask = document.getElementById("subnetMask").value;
+
+            const ipArray = ipToBinary(ip);
+            const maskArray = ipToBinary(mask);
+
+            if (!ipArray || !maskArray) {
+                alert("Please enter a valid IP address and subnet mask.");
+                return;
+            }
+
+            const networkArray = ipArray.map((bit, index) => bit & maskArray[index]);
+            const networkAddress = binaryToIp(networkArray);
+
+            const invertedMaskArray = maskArray.map(bit => bit === 1 ? 0 : 1);
+            const broadcastArray = networkArray.map((bit, index) => bit | invertedMaskArray[index]);
+            const broadcastAddress = binaryToIp(broadcastArray);
+
+            const firstUsableArray = [...networkArray];
+            firstUsableArray[31] = 1;
+            const lastUsableArray = [...broadcastArray];
+            lastUsableArray[31] = 0;
+            const firstUsableIp = binaryToIp(firstUsableArray);
+            const lastUsableIp = binaryToIp(lastUsableArray);
+
+            displayVisualization(ipArray, maskArray);
+
+            const totalIPs = broadcastArray.reduce((acc, bit, index) => acc + (bit - networkArray[index]) * Math.pow(2, 31 - index), 0) - 1;
+            let usableIPs = [];
+            
+            // Generate first five IP addresses
+            let curArray = [...networkArray];
+            for (let i = 1; i <= Math.min(totalIPs, 5); i++) {
+                for (let j = 31; j >= 0; j--) {
+                    if (curArray[j] === 0) {
+                        curArray[j] = 1;
+                        break;
+                    } else {
+                        curArray[j] = 0;
+                    }
+                }
+                usableIPs.push(binaryToIp(curArray));
+            }
+
+            if (totalIPs > 10) {
+                usableIPs.push('...');
+                // Generate last five IP addresses
+                let lastFiveIPs = [];
+                let curArray = [...broadcastArray];
+                for (let i = 0; i < 5; i++) {
+                    for (let j = 31; j >= 0; j--) {
+                        if (curArray[j] === 1) {
+                            curArray[j] = 0;
+                            break;
+                        } else {
+                            curArray[j] = 1;
+                        }
+                    }
+                    lastFiveIPs.unshift(binaryToIp(curArray));
+                }
+                usableIPs.push(...lastFiveIPs);
+            } else {
+                // If there are 10 or fewer IPs, show all of them
+                for (let i = 6; i <= totalIPs; i++) {
+                    for (let j = 31; j >= 0; j--) {
+                        if (curArray[j] === 0) {
+                            curArray[j] = 1;
+                            break;
+                        } else {
+                            curArray[j] = 0;
+                        }
+                    }
+                    usableIPs.push(binaryToIp(curArray));
+                }
+            }
+
+            document.getElementById("results").innerHTML = `
+                <p><strong>Network Address:</strong> ${networkAddress}</p>
+                <p><strong>Broadcast Address:</strong> ${broadcastAddress}</p>
+                <p><strong>Usable IP Addresses:</strong></p>
+                ${usableIPs.map(ip => {
+                    if (ip === '...') {
+                        return '<div class="binary-row">...</div>';
+                    }
+                    const binaryIp = ipToBinary(ip);
+                    return `
+                    <div class="binary-row">
+                        <span class="label">${ip.padEnd(15)}</span>
+                        ${binaryIp.map((bit, index) => `<span class="binary-segment ${maskArray[index] === 1 ? 'network' : 'host'}">${bit}</span>`).join('')}
+                    </div>`;
+                }).join('')}
+            `;
+        }
+
+        function displayVisualization(ipArray, maskArray) {
+            const visualization = document.getElementById("visualization");
+
+            visualization.innerHTML = `
+                <div class="binary-row">
+                    <span class="label">IP Address:</span>
+                    ${ipArray.map((bit, index) => `<span class="binary-segment ${maskArray[index] === 1 ? 'network' : 'host'}">${bit}</span>`).join('')}
+                </div>
+                <div class="binary-row">
+                    <span class="label">Subnet Mask:</span>
+                    ${maskArray.map((bit, index) => `<span class="binary-segment ${bit === 1 ? 'network' : 'host'}">${bit}</span>`).join('')}
+                </div>
+            `;
+        }
+
+        function ipToBinary(ip) {
+            const octets = ip.split('.');
+            if (octets.length !== 4) return null;
+            return octets.map(octet => {
+                const binary = parseInt(octet, 10).toString(2).padStart(8, '0');
+                return binary.split('').map(bit => parseInt(bit, 10));
+            }).flat();
+        }
+
+        function binaryToIp(binaryArray) {
+            const octets = [];
+            for (let i = 0; i < 32; i += 8) {
+                const octet = binaryArray.slice(i, i + 8).join('');
+                octets.push(parseInt(octet, 2));
+            }
+            return octets.join('.');
+        }
+    </script>
+</body>
+</html>
