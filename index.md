@@ -17,6 +17,8 @@ title: "содержание"
 
 [задание 7: количество информации]({{ site.baseurl }}{% link _notes/7.md %})
 
+[задание 8: комбинаторика]({{ site.baseurl }}{% link _notes/8.md %})
+
 [разные полезные функции]({{ site.baseurl }}{% link _notes/utils.md %})
 
 [симулятор работы с ip-адресами и масками]({{ site.baseurl }}{% link simulator/simulator.html %})
