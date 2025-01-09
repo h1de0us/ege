@@ -21,6 +21,8 @@ title: "содержание"
 
 [задание 17: python, работа с последовательностями чисел]({{ site.baseurl }}{% link _notes/17.md %})
 
+[задания 19-21: теория игр]({{ site.baseurl }}{% link _notes/19.md %})
+
 [задание 22: параллельные процессы]({{ site.baseurl }}{% link _notes/22.md %})
 
 [задание 23: количество путей в графе]({{ site.baseurl }}{% link _notes/23.md %})
