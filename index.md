@@ -27,6 +27,8 @@ title: "содержание"
 
 [задание 23: количество путей в графе]({{ site.baseurl }}{% link _notes/23.md %})
 
+[задание 24: обработка строк]({{ site.baseurl }}{% link _notes/24.md %})
+
 [разные полезные функции]({{ site.baseurl }}{% link _notes/utils.md %})
 
 [симулятор работы с ip-адресами и масками]({{ site.baseurl }}{% link simulator/simulator.html %})
