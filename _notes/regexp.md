@@ -5,7 +5,7 @@ title: "задание 24: регулярные выражения"
 
 [читлист](https://cheatography.com/davechild/cheat-sheets/regular-expressions/)
 
-[пример задачи](https://education.yandex.ru/ege/task/d1b752f8-587f-47c2-8187-7975a7684715)
+[пример задачи на сложение и умножение](https://education.yandex.ru/ege/task/d1b752f8-587f-47c2-8187-7975a7684715)
 
 ```python
 import re
@@ -39,6 +39,24 @@ zero_sum = rf'{zero_product}(?:\+{zero_product})*'
 
 results = re.findall(zero_sum, line)
 
+answer = 0
+for res in results:
+    answer = max(answer, len(res))
+print(answer)
+```
+
+[пример задачи на вычитание и умножение](https://education.yandex.ru/ege/task/60136ef5-552a-4bc0-9224-2914e321d93b)
+
+```python
+line = open('24.txt', 'r').readline()
+
+import re
+
+number = r'[1-9]\d*'
+product = rf'-?{number}(?:\*{number}|\*0)*'
+diff = rf'{product}(?:-{product}|-0)*'
+
+results = re.findall(diff, line)
 answer = 0
 for res in results:
     answer = max(answer, len(res))
