@@ -29,6 +29,8 @@ title: "содержание"
 
 [задание 24: обработка строк]({{ site.baseurl }}{% link _notes/24.md %})
 
+[задание 24: регулярные выражения]({{ site.baseurl }}{% link _notes/regexp.md %})
+
 [разные полезные функции]({{ site.baseurl }}{% link _notes/utils.md %})
 
 [симулятор работы с ip-адресами и масками]({{ site.baseurl }}{% link simulator/simulator.html %})
