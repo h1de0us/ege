@@ -62,3 +62,35 @@ for res in results:
     answer = max(answer, len(res))
 print(answer)
 ```
+
+[пример задачи про цепочку из повторяющихся фрагментов](https://education.yandex.ru/ege/task/543670ff-52fb-4d26-86f8-c82350ecb28b)
+
+```python
+import re
+
+line = open('24.txt', 'r').readline()
+pattern = r'(?:XA|XY|TXA)*'
+parts = re.findall(pattern, line)
+print(max(len(part) for part in parts))
+```
+
+[пример задачи про тройки символов](https://education.yandex.ru/ege/task/6f3cbabe-5d81-415e-8f8f-2f6c1c3ff308)
+
+```python
+import re
+
+line = open('24.txt', 'r').readline()
+pattern = r'(?:[1-9]\d[A-Za-z])*'
+parts = re.findall(pattern, line)
+print(max(len(part) for part in parts) // 3)
+```
+
+[пример задачи про пары символов](https://education.yandex.ru/ege/task/f05f88d6-f4c2-4bc5-84bd-d9e7ffffb9bd)
+```python
+import re
+
+line = open('24.txt', 'r').readline()
+pattern = r'(?:[A-C][A-C])*'
+parts = re.findall(pattern, line)
+print(max(len(part) for part in parts) // 2)
+```
