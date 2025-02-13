@@ -1,45 +1,45 @@
-# ЕГЭ по Информатике - Учебные материалы
+# informatics exam preparation materials
 
-Сборник учебных материалов и решений для подготовки к ЕГЭ по информатике. Этот репозиторий содержит подробные разборы заданий, примеры решений и полезные инструменты.
+a comprehensive collection of study materials and solutions for the russian unified state exam in informatics. this repository contains detailed problem breakdowns, solution examples, and useful tools.
 
-## Содержание
+## contents
 
-### Алгоритмы и программирование
-- Задание 5: Функции и алгоритмы
-- Задание 16: Рекурсия
-- Задание 17: Python, работа с последовательностями чисел
-- Задание 24: Обработка строк
-- Задание 24: Регулярные выражения
+### algorithms and programming
+- task 5: functions and algorithms
+- task 16: recursion
+- task 17: python sequence processing
+- task 24: string processing
+- task 24: regular expressions
 
-### Математические основы информатики
-- Задание 7: Количество информации
-- Задание 8: Комбинаторика
-- Задание 14: Системы счисления
-- Задание 15: Алгебра логики
+### mathematical foundations
+- task 7: information theory
+- task 8: combinatorics  
+- task 14: number systems
+- task 15: boolean algebra
 
-### Компьютерные сети и системы
-- Задание 13: IP-адреса
-- Задание 22: Параллельные процессы
+### computer systems and networks
+- task 13: ip addressing
+- task 22: parallel processes
 
-### Теория и графы
-- Задания 19-21: Теория игр
-- Задание 23: Количество путей в графе
+### theory and graphs
+- tasks 19-21: game theory
+- task 23: path counting in graphs
 
-### Исполнители
-- Задание 12: Исполнители
+### executors
+- task 12: algorithm executors
 
-### Инструменты
-- Симулятор работы с IP-адресами и масками
-- Различные полезные функции и утилиты
+### tools
+- ip address and subnet mask simulator
+- utility functions and helpers
 
-## Использование
+## usage
 
-Материалы организованы по номерам заданий ЕГЭ. Каждый раздел содержит теоретические материалы и практические примеры.
+materials are organized by exam task numbers. each section contains both theoretical foundations and practical examples to help you master the concepts.
 
-## Дополнительно
+## additional features
 
-Проект включает в себя интерактивный симулятор для работы с IP-адресами и масками подсети, который поможет лучше понять соответствующую тему.
+the project includes an interactive simulator for working with ip addresses and subnet masks, designed to provide hands-on experience with networking concepts.
 
 ---
 
-Этот проект является образовательным ресурсом и постоянно обновляется новыми материалами и примерами. 
+this is an evolving educational resource that's regularly updated with new content and examples to help students excel in their exam preparation.
