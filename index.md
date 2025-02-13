@@ -31,6 +31,8 @@ title: "содержание"
 
 [задание 24: регулярные выражения]({{ site.baseurl }}{% link _notes/regexp.md %})
 
+[задание 25: обработка чисел в диапазоне]({{ site.baseurl }}{% link _notes/25.md %})
+
 [разные полезные функции]({{ site.baseurl }}{% link _notes/utils.md %})
 
 [симулятор работы с ip-адресами и масками]({{ site.baseurl }}{% link simulator/simulator.html %})
