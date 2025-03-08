@@ -309,6 +309,30 @@ for i in range(6):
     t.circle(5)
     t.left(60)
             </div>
+            
+            <div class="example-code" data-example="shapes">
+# different shapes
+import turtle
+
+t = turtle.Turtle()
+t.speed(0)
+
+# try different shapes
+shapes = ['classic', 'triangle', 'square', 'circle']
+
+for i, shape in enumerate(shapes):
+    t.penup()
+    t.goto(-7.5 + 5*i, 0)
+    t.pendown()
+    t.shape(shape)
+    t.stamp()  # this won't work yet, but shows the shape
+
+# hide and show the turtle
+t.goto(0, 5)
+t.hideturtle()
+t.forward(5)
+t.showturtle()
+            </div>
         </div>
     </div>
 
@@ -324,7 +348,9 @@ for i in range(6):
             angle: 0,
             isPenDown: true,
             color: 'black',
-            width: 1
+            width: 1,
+            isVisible: true,
+            shape: 'classic'
         };
         // Добавляем переменную для хранения типа сетки
         let gridType = 'lines'; // 'lines', 'dots', 'none'
@@ -400,7 +426,9 @@ for i in range(6):
                 angle: 0,
                 isPenDown: true,
                 color: 'black',
-                width: 1
+                width: 1,
+                isVisible: true,
+                shape: 'classic'
             };
             
             // Нарисовать начальное положение черепашки
@@ -408,6 +436,9 @@ for i in range(6):
         }
 
         function drawTurtle() {
+            // Если черепашка скрыта, не рисуем её
+            if (!turtleState.isVisible) return;
+            
             const size = 10;
             
             // Сохраняем текущее состояние контекста
@@ -417,15 +448,47 @@ for i in range(6):
             ctx.translate(turtleState.x, turtleState.y);
             ctx.rotate(turtleState.angle * Math.PI / 180);
             
-            // Рисуем треугольник для черепашки
-            ctx.beginPath();
-            ctx.moveTo(size, 0);
-            ctx.lineTo(-size, size / 2);
-            ctx.lineTo(-size, -size / 2);
-            ctx.closePath();
-            
-            ctx.fillStyle = 'green';
-            ctx.fill();
+            // Рисуем форму черепашки в зависимости от выбранной формы
+            switch (turtleState.shape) {
+                case 'triangle':
+                    // Треугольник
+                    ctx.beginPath();
+                    ctx.moveTo(size, 0);
+                    ctx.lineTo(-size, size / 2);
+                    ctx.lineTo(-size, -size / 2);
+                    ctx.closePath();
+                    ctx.fillStyle = 'green';
+                    ctx.fill();
+                    break;
+                    
+                case 'square':
+                    // Квадрат
+                    ctx.beginPath();
+                    ctx.rect(-size/2, -size/2, size, size);
+                    ctx.fillStyle = 'blue';
+                    ctx.fill();
+                    break;
+                    
+                case 'circle':
+                    // Круг
+                    ctx.beginPath();
+                    ctx.arc(0, 0, size/2, 0, 2 * Math.PI);
+                    ctx.fillStyle = 'red';
+                    ctx.fill();
+                    break;
+                    
+                case 'classic':
+                default:
+                    // Классическая форма (треугольник)
+                    ctx.beginPath();
+                    ctx.moveTo(size, 0);
+                    ctx.lineTo(-size/2, size/2);
+                    ctx.lineTo(-size/2, -size/2);
+                    ctx.closePath();
+                    ctx.fillStyle = 'green';
+                    ctx.fill();
+                    break;
+            }
             
             // Восстанавливаем состояние контекста
             ctx.restore();
@@ -623,6 +686,28 @@ for i in range(6):
             turtleState.width = width;
         };
 
+        window.turtleHide = () => {
+            turtleState.isVisible = false;
+            // Перерисовываем холст без черепашки
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            resetCanvas();
+            ctx.putImageData(imageData, 0, 0);
+        };
+
+        window.turtleShow = () => {
+            turtleState.isVisible = true;
+            drawTurtle();
+        };
+
+        window.turtleShape = (shape) => {
+            // Проверяем допустимые значения
+            const validShapes = ['classic', 'triangle', 'circle', 'square'];
+            if (validShapes.includes(shape)) {
+                turtleState.shape = shape;
+                drawTurtle();
+            }
+        };
+
         async function setupTurtleModule() {
             // Создаем модуль turtle с безопасными функциями
             await pyodide.runPython(`
@@ -692,6 +777,15 @@ for i in range(6):
                         def width(self, width):
                             js.turtlePenSize(width)
                         
+                        def hideturtle(self):
+                            js.turtleHide()
+                        
+                        def showturtle(self):
+                            js.turtleShow()
+                        
+                        def shape(self, name):
+                            js.turtleShape(name)
+                        
                         # Алиасы для совместимости
                         fd = forward
                         bk = backward
@@ -702,6 +796,8 @@ for i in range(6):
                         pd = pendown
                         up = penup
                         down = pendown
+                        ht = hideturtle
+                        st = showturtle
                 
                 # Создаем модуль turtle
                 import sys
