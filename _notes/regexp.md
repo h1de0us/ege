@@ -94,3 +94,58 @@ pattern = r'(?:[A-C][A-C])*'
 parts = re.findall(pattern, line)
 print(max(len(part) for part in parts) // 2)
 ```
+
+[задача про yandex](https://education.yandex.ru/ege/task/01dfb7d5-1b71-470d-adf4-612e4adaaf7e)
+
+```python
+import re
+
+f = open('24.txt', 'r')
+line = f.readline()
+
+regex = r'(?:y(?:4|a)nd(?:3|e)x)+'
+
+pattern = re.compile(regex)
+span_start = 0
+res = True
+answer = 0
+end = 0
+while res:
+    res = pattern.search(line, pos=span_start)
+    if res:
+        if len(res[0]) > answer:
+            answer = max(len(res[0]), answer)
+            end = res.end()
+        span_start = res.start() + 1
+print(answer, end)
+print(line[end:end + 6])
+``` 
+
+[задача про число, не соответствующее маскам](https://education.yandex.ru/ege/task/a7d40d31-e448-4fe4-bcbd-6fb94af87a43)
+
+```python
+import re
+
+mask1 = r'\d*0\d3\d*'
+mask2 = r'\d*4\d2'
+mask3 = r'\d*1\d*'
+
+count = 0
+for n in range(700000 + 1, 10 ** 10):
+    parts1 = re.findall(mask1, str(n))
+    parts2 = re.findall(mask2, str(n))
+    parts3 = re.findall(mask3, str(n))
+    if parts1 and parts1[0] == str(n):
+        continue
+    if parts2 and parts2[0] == str(n):
+        continue
+    if parts3 and parts3[0] == str(n):
+        continue
+
+    if n % 13 == 0:
+        count += 1
+        print(n, sum(int(digit) for digit in str(n)), sep='\t')
+
+    if count == 5:
+        break
+```
