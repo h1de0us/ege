@@ -9,6 +9,8 @@ title: "содержание"
 
 [задание 8: комбинаторика]({{ site.baseurl }}{% link _notes/8.md %})
 
+[задание 9: работа со строками чисел]({{ site.baseurl }}{% link _notes/9.md %})
+
 [задание 12: исполнители]({{ site.baseurl }}{% link _notes/12.md %})
 
 [задание 13: ip-адреса]({{ site.baseurl }}{% link _notes/13.md %})
