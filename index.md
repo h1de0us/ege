@@ -41,7 +41,7 @@ title: "содержание"
 
 [симулятор работы с ip-адресами и масками]({{ site.baseurl }}{% link simulator/simulator.html %})
 
-[симулятор Python Turtle]({{ site.baseurl }}{% link simulator/turtle.html %})
+[симулятор черепашки]({{ site.baseurl }}{% link simulator/turtle.html %})
 
 ---
 
