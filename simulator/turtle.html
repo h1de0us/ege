@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python Turtle Симулятор</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        .editor-container {
+            display: flex;
+            flex-direction: row;
+            gap: 20px;
+        }
+        @media (max-width: 768px) {
+            .editor-container {
+                flex-direction: column;
+            }
+        }
+        .code-section, .output-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        .code-editor {
+            height: 400px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-family: monospace;
+            padding: 10px;
+            resize: vertical;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .canvas-container {
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
+            background-color: white;
+        }
+        #turtleCanvas {
+            display: block;
+        }
+        .controls {
+            margin-top: 10px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        button {
+            padding: 8px 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .size-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        input[type="number"] {
+            width: 70px;
+            padding: 6px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .error-message {
+            color: red;
+            margin-top: 10px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            max-height: 100px;
+            overflow-y: auto;
+            background-color: #ffeeee;
+            padding: 8px;
+            border-radius: 4px;
+            display: none;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .examples {
+            margin-top: 20px;
+        }
+        .example-code {
+            background-color: #f8f8f8;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            font-family: monospace;
+            cursor: pointer;
+            border: 1px solid #ddd;
+        }
+        .example-code:hover {
+            background-color: #f0f0f0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Python Turtle Симулятор</h1>
+        
+        <div class="editor-container">
+            <div class="code-section">
+                <h3>Код Python</h3>
+                <textarea id="codeEditor" class="code-editor">import turtle
+
+t = turtle.Turtle()
+t.speed(0)  # Максимальная скорость
+
+# Нарисуем звезду
+for i in range(5):
+    t.forward(100)
+    t.right(144)
+
+# Переместим черепашку
+t.penup()
+t.goto(-50, -50)
+t.pendown()
+
+# Нарисуем квадрат
+for i in range(4):
+    t.forward(100)
+    t.left(90)
+</textarea>
+                <div class="controls">
+                    <button id="runButton">Запустить</button>
+                    <button id="clearButton">Очистить</button>
+                    <div class="size-controls">
+                        <label for="canvasWidth">Ширина:</label>
+                        <input type="number" id="canvasWidth" value="500" min="100" max="1000">
+                        <label for="canvasHeight">Высота:</label>
+                        <input type="number" id="canvasHeight" value="400" min="100" max="1000">
+                        <button id="resizeButton">Изменить размер</button>
+                    </div>
+                </div>
+                <div id="errorMessage" class="error-message"></div>
+            </div>
+            
+            <div class="output-section">
+                <h3>Результат</h3>
+                <div class="canvas-container">
+                    <canvas id="turtleCanvas" width="500" height="400"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <div class="examples">
+            <h3>Примеры кода</h3>
+            <div class="example-code" data-example="spiral">
+# Спираль
+import turtle
+
+t = turtle.Turtle()
+t.speed(0)
+
+for i in range(100):
+    t.forward(i)
+    t.right(91)
+            </div>
+            
+            <div class="example-code" data-example="flower">
+# Цветок
+import turtle
+
+t = turtle.Turtle()
+t.speed(0)
+
+for i in range(36):
+    for j in range(4):
+        t.forward(100)
+        t.right(90)
+    t.right(10)
+            </div>
+            
+            <div class="example-code" data-example="colorful">
+# Разноцветные круги
+import turtle
+
+t = turtle.Turtle()
+t.speed(0)
+
+colors = ['red', 'orange', 'yellow', 'green', 'blue', 'purple']
+
+for i in range(36):
+    t.color(colors[i % 6])
+    t.circle(100)
+    t.left(10)
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/pyodide/v0.23.4/full/pyodide.js"></script>
+    <script>
+        let pyodide;
+        let canvas, ctx;
+        let turtleState = {
+            x: 0,
+            y: 0,
+            angle: 0,
+            isPenDown: true,
+            color: 'black',
+            width: 1
+        };
+
+        async function initPyodide() {
+            pyodide = await loadPyodide();
+            await pyodide.loadPackagesFromImports(`
+                import sys
+                import io
+            `);
+            
+            // Настройка перехвата вывода
+            pyodide.runPython(`
+                sys.stdout = io.StringIO()
+                sys.stderr = io.StringIO()
+            `);
+            
+            // Инициализация canvas
+            canvas = document.getElementById('turtleCanvas');
+            ctx = canvas.getContext('2d');
+            resetCanvas();
+            
+            // Реализация модуля turtle
+            await setupTurtleModule();
+            
+            document.getElementById('runButton').disabled = false;
+        }
+
+        function resetCanvas() {
+            const width = canvas.width;
+            const height = canvas.height;
+            
+            // Очистка холста
+            ctx.fillStyle = 'white';
+            ctx.fillRect(0, 0, width, height);
+            
+            // Сброс состояния черепашки
+            turtleState = {
+                x: width / 2,
+                y: height / 2,
+                angle: 0,
+                isPenDown: true,
+                color: 'black',
+                width: 1
+            };
+            
+            // Нарисовать начальное положение черепашки
+            drawTurtle();
+        }
+
+        function drawTurtle() {
+            const size = 10;
+            
+            // Сохраняем текущее состояние контекста
+            ctx.save();
+            
+            // Перемещаемся в позицию черепашки и поворачиваем
+            ctx.translate(turtleState.x, turtleState.y);
+            ctx.rotate(turtleState.angle * Math.PI / 180);
+            
+            // Рисуем треугольник для черепашки
+            ctx.beginPath();
+            ctx.moveTo(size, 0);
+            ctx.lineTo(-size, size / 2);
+            ctx.lineTo(-size, -size / 2);
+            ctx.closePath();
+            
+            ctx.fillStyle = 'green';
+            ctx.fill();
+            
+            // Восстанавливаем состояние контекста
+            ctx.restore();
+        }
+
+        async function setupTurtleModule() {
+            // Создаем модуль turtle с безопасными функциями
+            await pyodide.runPython(`
+                class TurtleModule:
+                    class Turtle:
+                        def __init__(self):
+                            pass
+                        
+                        def forward(self, distance):
+                            js.turtleForward(distance)
+                        
+                        def backward(self, distance):
+                            js.turtleBackward(distance)
+                        
+                        def right(self, angle):
+                            js.turtleRight(angle)
+                        
+                        def left(self, angle):
+                            js.turtleLeft(angle)
+                        
+                        def penup(self):
+                            js.turtlePenUp()
+                        
+                        def pendown(self):
+                            js.turtlePenDown()
+                        
+                        def goto(self, x, y):
+                            js.turtleGoto(x, y)
+                        
+                        def setposition(self, x, y):
+                            js.turtleGoto(x, y)
+                        
+                        def setpos(self, x, y):
+                            js.turtleGoto(x, y)
+                        
+                        def setheading(self, angle):
+                            js.turtleSetHeading(angle)
+                        
+                        def seth(self, angle):
+                            js.turtleSetHeading(angle)
+                        
+                        def home(self):
+                            js.turtleHome()
+                        
+                        def circle(self, radius, extent=None, steps=None):
+                            js.turtleCircle(radius, extent, steps)
+                        
+                        def dot(self, size=None, color=None):
+                            js.turtleDot(size, color)
+                        
+                        def speed(self, speed=None):
+                            # Скорость игнорируется в нашей реализации
+                            pass
+                        
+                        def color(self, color):
+                            js.turtleColor(color)
+                        
+                        def pencolor(self, color):
+                            js.turtleColor(color)
+                        
+                        def pensize(self, width):
+                            js.turtlePenSize(width)
+                        
+                        def width(self, width):
+                            js.turtlePenSize(width)
+                        
+                        # Алиасы для совместимости
+                        fd = forward
+                        bk = backward
+                        back = backward
+                        rt = right
+                        lt = left
+                        pu = penup
+                        pd = pendown
+                        up = penup
+                        down = pendown
+                
+                # Создаем модуль turtle
+                import sys
+                sys.modules['turtle'] = TurtleModule
+                
+                # Ограничиваем доступные модули для безопасности
+                allowed_modules = {'turtle', 'math', 'random'}
+                original_import = __import__
+                
+                def safe_import(name, *args, **kwargs):
+                    if name not in allowed_modules:
+                        raise ImportError(f"Импорт модуля '{name}' запрещен по соображениям безопасности")
+                    return original_import(name, *args, **kwargs)
+                
+                __builtins__.__import__ = safe_import
+            `);
+            
+            // Определяем JavaScript функции для управления черепашкой
+            window.turtleForward = (distance) => {
+                const newX = turtleState.x + distance * Math.cos(turtleState.angle * Math.PI / 180);
+                const newY = turtleState.y + distance * Math.sin(turtleState.angle * Math.PI / 180);
+                
+                if (turtleState.isPenDown) {
+                    ctx.beginPath();
+                    ctx.moveTo(turtleState.x, turtleState.y);
+                    ctx.lineTo(newX, newY);
+                    ctx.strokeStyle = turtleState.color;
+                    ctx.lineWidth = turtleState.width;
+                    ctx.stroke();
+                }
+                
+                turtleState.x = newX;
+                turtleState.y = newY;
+                
+                drawTurtle();
+            };
+            
+            window.turtleBackward = (distance) => {
+                window.turtleForward(-distance);
+            };
+            
+            window.turtleRight = (angle) => {
+                turtleState.angle += angle;
+                drawTurtle();
+            };
+            
+            window.turtleLeft = (angle) => {
+                turtleState.angle -= angle;
+                drawTurtle();
+            };
+            
+            window.turtlePenUp = () => {
+                turtleState.isPenDown = false;
+            };
+            
+            window.turtlePenDown = () => {
+                turtleState.isPenDown = true;
+            };
+            
+            window.turtleGoto = (x, y) => {
+                // Преобразуем координаты из системы координат turtle в координаты canvas
+                const canvasX = canvas.width / 2 + x;
+                const canvasY = canvas.height / 2 - y;
+                
+                if (turtleState.isPenDown) {
+                    ctx.beginPath();
+                    ctx.moveTo(turtleState.x, turtleState.y);
+                    ctx.lineTo(canvasX, canvasY);
+                    ctx.strokeStyle = turtleState.color;
+                    ctx.lineWidth = turtleState.width;
+                    ctx.stroke();
+                }
+                
+                turtleState.x = canvasX;
+                turtleState.y = canvasY;
+                
+                drawTurtle();
+            };
+            
+            window.turtleSetHeading = (angle) => {
+                turtleState.angle = angle;
+                drawTurtle();
+            };
+            
+            window.turtleHome = () => {
+                turtleState.x = canvas.width / 2;
+                turtleState.y = canvas.height / 2;
+                turtleState.angle = 0;
+                drawTurtle();
+            };
+            
+            window.turtleCircle = (radius, extent, steps) => {
+                const fullCircle = 360;
+                const angleToTurn = extent ? extent : fullCircle;
+                const stepsToUse = steps ? steps : Math.max(Math.abs(Math.floor(angleToTurn)), 36);
+                const angleStep = angleToTurn / stepsToUse;
+                
+                // Сохраняем текущее положение и угол
+                const startX = turtleState.x;
+                const startY = turtleState.y;
+                const startAngle = turtleState.angle;
+                
+                // Поворачиваем на 90 градусов влево для начала рисования круга
+                turtleState.angle += 90;
+                
+                // Рисуем круг как многоугольник
+                for (let i = 0; i < stepsToUse; i++) {
+                    window.turtleForward(2 * Math.PI * Math.abs(radius) / stepsToUse);
+                    window.turtleRight(angleStep * (radius > 0 ? 1 : -1));
+                }
+                
+                // Восстанавливаем угол
+                turtleState.angle = startAngle;
+                drawTurtle();
+            };
+            
+            window.turtleDot = (size, color) => {
+                const dotSize = size || Math.max(turtleState.width + 4, 2);
+                const dotColor = color || turtleState.color;
+                
+                ctx.beginPath();
+                ctx.arc(turtleState.x, turtleState.y, dotSize / 2, 0, 2 * Math.PI);
+                ctx.fillStyle = dotColor;
+                ctx.fill();
+                
+                drawTurtle();
+            };
+            
+            window.turtleColor = (color) => {
+                turtleState.color = color;
+            };
+            
+            window.turtlePenSize = (width) => {
+                turtleState.width = width;
+            };
+        }
+
+        async function runCode() {
+            if (!pyodide) return;
+            
+            const code = document.getElementById('codeEditor').value;
+            const errorElement = document.getElementById('errorMessage');
+            
+            // Очистка предыдущих ошибок
+            errorElement.style.display = 'none';
+            errorElement.textContent = '';
+            
+            // Очистка холста
+            resetCanvas();
+            
+            try {
+                // Очистка предыдущего вывода
+                pyodide.runPython(`
+                    sys.stdout = io.StringIO()
+                    sys.stderr = io.StringIO()
+                `);
+                
+                // Выполнение кода
+                await pyodide.runPythonAsync(code);
+                
+                // Проверка на ошибки или вывод
+                const stdout = pyodide.runPython("sys.stdout.getvalue()");
+                const stderr = pyodide.runPython("sys.stderr.getvalue()");
+                
+                if (stderr) {
+                    errorElement.textContent = stderr;
+                    errorElement.style.display = 'block';
+                }
+                
+                if (stdout) {
+                    console.log("Python output:", stdout);
+                }
+            } catch (error) {
+                errorElement.textContent = error.toString();
+                errorElement.style.display = 'block';
+                console.error("Python execution error:", error);
+            }
+        }
+
+        function resizeCanvas() {
+            const width = parseInt(document.getElementById('canvasWidth').value);
+            const height = parseInt(document.getElementById('canvasHeight').value);
+            
+            if (isNaN(width) || isNaN(height) || width < 100 || height < 100) {
+                alert('Пожалуйста, введите корректные размеры (минимум 100x100)');
+                return;
+            }
+            
+            canvas.width = width;
+            canvas.height = height;
+            resetCanvas();
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Инициализация Pyodide
+            document.getElementById('runButton').disabled = true;
+            document.getElementById('runButton').textContent = 'Загрузка...';
+            
+            initPyodide().then(() => {
+                document.getElementById('runButton').textContent = 'Запустить';
+            });
+            
+            // Обработчики событий
+            document.getElementById('runButton').addEventListener('click', runCode);
+            document.getElementById('clearButton').addEventListener('click', () => {
+                resetCanvas();
+            });
+            document.getElementById('resizeButton').addEventListener('click', resizeCanvas);
+            
+            // Обработчики для примеров кода
+            document.querySelectorAll('.example-code').forEach(example => {
+                example.addEventListener('click', () => {
+                    document.getElementById('codeEditor').value = example.textContent.trim();
+                });
+            });
+        });
+    </script>
+</body>
+</html> 
