@@ -192,7 +192,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>Python Turtle Simulator</h1>
+        <h1>turtle goes brrr</h1>
         
         <!-- Compatibility information -->
         <div id="browserInfo" style="margin-bottom: 15px; padding: 10px; background-color: #f8f9fa; border-radius: 4px;">
@@ -201,7 +201,7 @@
             <ul>
                 <li>refreshing the page</li>
                 <li>using a different browser</li>
-                <li>disabling ad blockers and script blockers</li>
+                <li>disabling script blockers</li>
                 <li>checking your internet connection</li>
             </ul>
         </div>
@@ -337,7 +337,7 @@ for i in range(6):
                         indexURL: "{{ site.baseurl }}/simulator/pyodide/"
                     });
                 } catch (localError) {
-                    console.log("Локальная версия Pyodide не найдена, пробуем CDN");
+                    console.log("local pyodide version not found, trying CDN");
                     // Если локальная версия не работает, используем CDN
                     pyodide = await loadPyodide({
                         indexURL: "https://cdn.jsdelivr.net/pyodide/v0.24.1/full/"
@@ -369,16 +369,16 @@ for i in range(6):
                 await setupTurtleModule();
                 
                 document.getElementById('runButton').disabled = false;
-                document.getElementById('runButton').textContent = 'Запустить';
+                document.getElementById('runButton').textContent = 'run';
                 
                 // Добавим сообщение об успешной загрузке
-                console.log("Pyodide успешно загружен");
+                console.log("pyodide successfully loaded");
             } catch (error) {
-                console.error("Ошибка при загрузке Pyodide:", error);
+                console.error("pyodide loading error:", error);
                 document.getElementById('errorMessage').textContent = 
-                    `Ошибка при загрузке Pyodide: ${error.message}. Попробуйте обновить страницу или использовать другой браузер.`;
+                    `pyodide loading error: ${error.message}. try refreshing the page or using a different browser.`;
                 document.getElementById('errorMessage').style.display = 'block';
-                document.getElementById('runButton').textContent = 'Ошибка загрузки';
+                document.getElementById('runButton').textContent = 'retry loading';
             }
         }
 
@@ -906,7 +906,7 @@ for i in range(6):
             
             // Проверяем, загрузился ли Pyodide
             if (typeof loadPyodide === 'undefined') {
-                console.error("Функция loadPyodide не найдена. Pyodide не загружен.");
+                console.error("loadPyodide function not found. pyodide not loaded.");
                 document.getElementById('errorMessage').textContent = 
                     'could not load pyodide. please check your internet connection or try a different browser.';
                 document.getElementById('errorMessage').style.display = 'block';
