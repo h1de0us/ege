@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Python Turtle Симулятор</title>
+    <title>Python Turtle Simulator</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -175,85 +175,102 @@
         input:checked + .slider:before {
             transform: translateX(26px);
         }
+        .canvas-controls {
+            margin-top: 10px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .canvas-controls button {
+            background-color: #2196F3;
+        }
+
+        .canvas-controls button:hover {
+            background-color: #0b7dda;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Python Turtle Симулятор</h1>
+        <h1>Python Turtle Simulator</h1>
         
-        <!-- Добавим информацию о совместимости -->
+        <!-- Compatibility information -->
         <div id="browserInfo" style="margin-bottom: 15px; padding: 10px; background-color: #f8f9fa; border-radius: 4px;">
-            <p><strong>Примечание:</strong> Симулятор лучше всего работает в современных браузерах (Chrome, Firefox, Edge). 
-            Если у вас возникают проблемы с загрузкой, попробуйте:</p>
+            <p><strong>note:</strong> this simulator works best in modern browsers (chrome, firefox, edge). 
+            if you experience loading issues, try:</p>
             <ul>
-                <li>Обновить страницу</li>
-                <li>Использовать другой браузер</li>
-                <li>Отключить блокировщики рекламы и скриптов</li>
-                <li>Проверить подключение к интернету</li>
+                <li>refreshing the page</li>
+                <li>using a different browser</li>
+                <li>disabling ad blockers and script blockers</li>
+                <li>checking your internet connection</li>
             </ul>
         </div>
         
         <div class="editor-container">
             <div class="code-section">
-                <h3>Код Python</h3>
+                <h3>python code</h3>
                 <textarea id="codeEditor" class="code-editor">import turtle
 
 t = turtle.Turtle()
-t.speed(0)  # Максимальная скорость
+t.speed(0)  # maximum speed
 
-# Нарисуем звезду
+# draw a star
 for i in range(5):
     t.forward(8)
     t.right(144)
 
-# Переместим черепашку
+# move the turtle
 t.penup()
 t.goto(-5, -5)
 t.pendown()
 
-# Нарисуем квадрат
+# draw a square
 for i in range(4):
     t.forward(10)
     t.left(90)
 </textarea>
                 <div class="controls">
-                    <button id="runButton">Запустить</button>
-                    <button id="clearButton">Очистить</button>
+                    <button id="runButton">run</button>
+                    <button id="clearButton">clear</button>
                     <div class="size-controls">
-                        <label for="canvasSize">Размер холста (в шагах черепашки):</label>
+                        <label for="canvasSize">canvas size (in turtle steps):</label>
                         <select id="canvasSize">
                             <option value="20" selected>20×20</option>
                             <option value="50">50×50</option>
                             <option value="100">100×100</option>
                         </select>
-                        <button id="resizeButton">Изменить размер</button>
+                        <button id="resizeButton">resize</button>
                     </div>
-                    <!-- Добавляем переключатель для сетки -->
+                    <!-- Grid controls -->
                     <div class="grid-controls">
-                        <label for="gridType">Тип сетки:</label>
+                        <label for="gridType">grid type:</label>
                         <select id="gridType">
-                            <option value="lines" selected>Линии</option>
-                            <option value="dots">Точки</option>
-                            <option value="none">Без сетки</option>
+                            <option value="lines" selected>lines</option>
+                            <option value="dots">dots</option>
+                            <option value="none">none</option>
                         </select>
-                        <button id="updateGridButton">Обновить сетку</button>
+                        <button id="updateGridButton">update grid</button>
                     </div>
                 </div>
                 <div id="errorMessage" class="error-message"></div>
             </div>
             
             <div class="output-section">
-                <h3>Результат</h3>
+                <h3>result</h3>
                 <div class="canvas-container">
                     <canvas id="turtleCanvas" width="500" height="400"></canvas>
+                </div>
+                <!-- Button to open in new window -->
+                <div class="canvas-controls">
+                    <button id="openInNewWindowButton">open in new window</button>
                 </div>
             </div>
         </div>
         
         <div class="examples">
-            <h3>Примеры кода</h3>
+            <h3>code examples</h3>
             <div class="example-code" data-example="spiral">
-# Спираль
+# spiral
 import turtle
 
 t = turtle.Turtle()
@@ -265,7 +282,7 @@ for i in range(10):
             </div>
             
             <div class="example-code" data-example="flower">
-# Цветок
+# flower
 import turtle
 
 t = turtle.Turtle()
@@ -279,7 +296,7 @@ for i in range(8):
             </div>
             
             <div class="example-code" data-example="colorful">
-# Разноцветные круги
+# colorful circles
 import turtle
 
 t = turtle.Turtle()
@@ -749,7 +766,7 @@ for i in range(6):
             const turtleSteps = parseInt(document.getElementById('canvasSize').value);
             
             if (isNaN(turtleSteps) || turtleSteps < 20) {
-                alert('Пожалуйста, выберите корректный размер холста');
+                alert('please select a valid canvas size');
                 return;
             }
             
@@ -788,10 +805,99 @@ for i in range(6):
             };
             testScript.onerror = function() {
                 document.getElementById('errorMessage').textContent = 
-                    'Обнаружена блокировка внешних скриптов. Пожалуйста, отключите блокировщики скриптов для этой страницы.';
+                    'external script blocking detected. please disable script blockers for this page.';
                 document.getElementById('errorMessage').style.display = 'block';
             };
             document.head.appendChild(testScript);
+        }
+
+        function openInNewWindow() {
+            // Создаем новое окно
+            const newWindow = window.open('', '_blank', 'width=800,height=800');
+            
+            // Создаем HTML-содержимое для нового окна
+            newWindow.document.write(`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>turtle graphics - enlarged view</title>
+                    <style>
+                        body {
+                            margin: 0;
+                            padding: 20px;
+                            display: flex;
+                            flex-direction: column;
+                            align-items: center;
+                            background-color: #f5f5f5;
+                            font-family: Arial, sans-serif;
+                        }
+                        h2 {
+                            color: #333;
+                            margin-bottom: 20px;
+                        }
+                        .canvas-container {
+                            border: 1px solid #ccc;
+                            border-radius: 4px;
+                            overflow: hidden;
+                            background-color: white;
+                            margin-bottom: 20px;
+                        }
+                        canvas {
+                            display: block;
+                        }
+                        .info {
+                            margin-top: 20px;
+                            color: #666;
+                            font-size: 14px;
+                        }
+                        button {
+                            padding: 8px 16px;
+                            background-color: #4CAF50;
+                            color: white;
+                            border: none;
+                            border-radius: 4px;
+                            cursor: pointer;
+                            font-size: 14px;
+                            margin-top: 10px;
+                        }
+                        button:hover {
+                            background-color: #45a049;
+                        }
+                    </style>
+                </head>
+                <body>
+                    <h2>turtle graphics - enlarged view</h2>
+                    <div class="canvas-container">
+                        <canvas id="enlargedCanvas"></canvas>
+                    </div>
+                    <div class="info">
+                        <p>canvas size: ${document.getElementById('canvasSize').value}×${document.getElementById('canvasSize').value} turtle steps</p>
+                    </div>
+                    <button onclick="window.print()">print</button>
+                    <button onclick="window.close()">close</button>
+                </body>
+                </html>
+            `);
+            
+            // Получаем контекст нового canvas
+            const enlargedCanvas = newWindow.document.getElementById('enlargedCanvas');
+            
+            // Устанавливаем размер нового canvas (увеличенный)
+            const scaleFactor = 2; // Увеличиваем в 2 раза
+            enlargedCanvas.width = canvas.width * scaleFactor;
+            enlargedCanvas.height = canvas.height * scaleFactor;
+            
+            // Получаем контекст для рисования
+            const enlargedCtx = enlargedCanvas.getContext('2d');
+            
+            // Масштабируем контекст
+            enlargedCtx.scale(scaleFactor, scaleFactor);
+            
+            // Копируем содержимое исходного canvas
+            enlargedCtx.drawImage(canvas, 0, 0);
+            
+            // Закрываем документ для записи
+            newWindow.document.close();
         }
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -802,26 +908,26 @@ for i in range(6):
             if (typeof loadPyodide === 'undefined') {
                 console.error("Функция loadPyodide не найдена. Pyodide не загружен.");
                 document.getElementById('errorMessage').textContent = 
-                    'Не удалось загрузить Pyodide. Пожалуйста, проверьте подключение к интернету или используйте другой браузер.';
+                    'could not load pyodide. please check your internet connection or try a different browser.';
                 document.getElementById('errorMessage').style.display = 'block';
                 return;
             }
             
             // Инициализация Pyodide с таймаутом
             document.getElementById('runButton').disabled = true;
-            document.getElementById('runButton').textContent = 'Загрузка...';
+            document.getElementById('runButton').textContent = 'loading...';
             
             // Добавим таймаут для обнаружения проблем с загрузкой
             const loadingTimeout = setTimeout(() => {
-                if (document.getElementById('runButton').textContent === 'Загрузка...') {
+                if (document.getElementById('runButton').textContent === 'loading...') {
                     document.getElementById('errorMessage').textContent = 
-                        'Превышено время ожидания загрузки Pyodide. Проверьте подключение к интернету или попробуйте другой браузер.';
+                        'pyodide loading timeout. check your internet connection or try a different browser.';
                     document.getElementById('errorMessage').style.display = 'block';
-                    document.getElementById('runButton').textContent = 'Повторить загрузку';
+                    document.getElementById('runButton').textContent = 'retry loading';
                     document.getElementById('runButton').disabled = false;
                     
                     document.getElementById('runButton').onclick = () => {
-                        document.getElementById('runButton').textContent = 'Загрузка...';
+                        document.getElementById('runButton').textContent = 'loading...';
                         document.getElementById('runButton').disabled = true;
                         document.getElementById('errorMessage').style.display = 'none';
                         initPyodide();
@@ -840,6 +946,7 @@ for i in range(6):
             });
             document.getElementById('resizeButton').addEventListener('click', resizeCanvas);
             document.getElementById('updateGridButton').addEventListener('click', updateGrid);
+            document.getElementById('openInNewWindowButton').addEventListener('click', openInNewWindow);
             
             // Обработчики для примеров кода
             document.querySelectorAll('.example-code').forEach(example => {
