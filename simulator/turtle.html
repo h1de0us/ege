@@ -52,9 +52,16 @@
             overflow: hidden;
             position: relative;
             background-color: white;
+            width: 500px;
+            height: 500px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         #turtleCanvas {
             display: block;
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
         }
         .controls {
             margin-top: 10px;
@@ -116,11 +123,75 @@
         .example-code:hover {
             background-color: #f0f0f0;
         }
+        /* Добавляем стили для переключателя сетки */
+        .grid-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+        
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+        
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .slider {
+            background-color: #4CAF50;
+        }
+        
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Python Turtle Симулятор</h1>
+        
+        <!-- Добавим информацию о совместимости -->
+        <div id="browserInfo" style="margin-bottom: 15px; padding: 10px; background-color: #f8f9fa; border-radius: 4px;">
+            <p><strong>Примечание:</strong> Симулятор лучше всего работает в современных браузерах (Chrome, Firefox, Edge). 
+            Если у вас возникают проблемы с загрузкой, попробуйте:</p>
+            <ul>
+                <li>Обновить страницу</li>
+                <li>Использовать другой браузер</li>
+                <li>Отключить блокировщики рекламы и скриптов</li>
+                <li>Проверить подключение к интернету</li>
+            </ul>
+        </div>
         
         <div class="editor-container">
             <div class="code-section">
@@ -132,28 +203,40 @@ t.speed(0)  # Максимальная скорость
 
 # Нарисуем звезду
 for i in range(5):
-    t.forward(100)
+    t.forward(8)
     t.right(144)
 
 # Переместим черепашку
 t.penup()
-t.goto(-50, -50)
+t.goto(-5, -5)
 t.pendown()
 
 # Нарисуем квадрат
 for i in range(4):
-    t.forward(100)
+    t.forward(10)
     t.left(90)
 </textarea>
                 <div class="controls">
                     <button id="runButton">Запустить</button>
                     <button id="clearButton">Очистить</button>
                     <div class="size-controls">
-                        <label for="canvasWidth">Ширина:</label>
-                        <input type="number" id="canvasWidth" value="500" min="100" max="1000">
-                        <label for="canvasHeight">Высота:</label>
-                        <input type="number" id="canvasHeight" value="400" min="100" max="1000">
+                        <label for="canvasSize">Размер холста (в шагах черепашки):</label>
+                        <select id="canvasSize">
+                            <option value="20" selected>20×20</option>
+                            <option value="50">50×50</option>
+                            <option value="100">100×100</option>
+                        </select>
                         <button id="resizeButton">Изменить размер</button>
+                    </div>
+                    <!-- Добавляем переключатель для сетки -->
+                    <div class="grid-controls">
+                        <label for="gridType">Тип сетки:</label>
+                        <select id="gridType">
+                            <option value="lines" selected>Линии</option>
+                            <option value="dots">Точки</option>
+                            <option value="none">Без сетки</option>
+                        </select>
+                        <button id="updateGridButton">Обновить сетку</button>
                     </div>
                 </div>
                 <div id="errorMessage" class="error-message"></div>
@@ -176,7 +259,7 @@ import turtle
 t = turtle.Turtle()
 t.speed(0)
 
-for i in range(100):
+for i in range(10):
     t.forward(i)
     t.right(91)
             </div>
@@ -188,11 +271,11 @@ import turtle
 t = turtle.Turtle()
 t.speed(0)
 
-for i in range(36):
+for i in range(8):
     for j in range(4):
-        t.forward(100)
+        t.forward(5)
         t.right(90)
-    t.right(10)
+    t.right(45)
             </div>
             
             <div class="example-code" data-example="colorful">
@@ -204,15 +287,17 @@ t.speed(0)
 
 colors = ['red', 'orange', 'yellow', 'green', 'blue', 'purple']
 
-for i in range(36):
+for i in range(6):
     t.color(colors[i % 6])
-    t.circle(100)
-    t.left(10)
+    t.circle(5)
+    t.left(60)
             </div>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/pyodide/v0.23.4/full/pyodide.js"></script>
+    <!-- Добавляем ссылку на скрипт Pyodide -->
+    <script src="https://cdn.jsdelivr.net/pyodide/v0.24.1/full/pyodide.js"></script>
+
     <script>
         let pyodide;
         let canvas, ctx;
@@ -224,29 +309,60 @@ for i in range(36):
             color: 'black',
             width: 1
         };
+        // Добавляем переменную для хранения типа сетки
+        let gridType = 'lines'; // 'lines', 'dots', 'none'
 
         async function initPyodide() {
-            pyodide = await loadPyodide();
-            await pyodide.loadPackagesFromImports(`
-                import sys
-                import io
-            `);
-            
-            // Настройка перехвата вывода
-            pyodide.runPython(`
-                sys.stdout = io.StringIO()
-                sys.stderr = io.StringIO()
-            `);
-            
-            // Инициализация canvas
-            canvas = document.getElementById('turtleCanvas');
-            ctx = canvas.getContext('2d');
-            resetCanvas();
-            
-            // Реализация модуля turtle
-            await setupTurtleModule();
-            
-            document.getElementById('runButton').disabled = false;
+            try {
+                // Пробуем загрузить локальную версию, если она есть
+                try {
+                    pyodide = await loadPyodide({
+                        indexURL: "{{ site.baseurl }}/simulator/pyodide/"
+                    });
+                } catch (localError) {
+                    console.log("Локальная версия Pyodide не найдена, пробуем CDN");
+                    // Если локальная версия не работает, используем CDN
+                    pyodide = await loadPyodide({
+                        indexURL: "https://cdn.jsdelivr.net/pyodide/v0.24.1/full/"
+                    });
+                }
+                
+                // Используем альтернативный подход без модуля io
+                pyodide.runPython(`
+                    import sys
+                    
+                    class StringIOWrapper:
+                        def __init__(self):
+                            self.buffer = []
+                        def write(self, string):
+                            self.buffer.append(string)
+                        def getvalue(self):
+                            return ''.join(self.buffer)
+                    
+                    sys.stdout = StringIOWrapper()
+                    sys.stderr = StringIOWrapper()
+                `);
+                
+                // Инициализация canvas
+                canvas = document.getElementById('turtleCanvas');
+                ctx = canvas.getContext('2d');
+                resetCanvas();
+                
+                // Реализация модуля turtle
+                await setupTurtleModule();
+                
+                document.getElementById('runButton').disabled = false;
+                document.getElementById('runButton').textContent = 'Запустить';
+                
+                // Добавим сообщение об успешной загрузке
+                console.log("Pyodide успешно загружен");
+            } catch (error) {
+                console.error("Ошибка при загрузке Pyodide:", error);
+                document.getElementById('errorMessage').textContent = 
+                    `Ошибка при загрузке Pyodide: ${error.message}. Попробуйте обновить страницу или использовать другой браузер.`;
+                document.getElementById('errorMessage').style.display = 'block';
+                document.getElementById('runButton').textContent = 'Ошибка загрузки';
+            }
         }
 
         function resetCanvas() {
@@ -256,6 +372,9 @@ for i in range(36):
             // Очистка холста
             ctx.fillStyle = 'white';
             ctx.fillRect(0, 0, width, height);
+            
+            // Рисуем сетку, если включено
+            drawGrid();
             
             // Сброс состояния черепашки
             turtleState = {
@@ -295,9 +414,204 @@ for i in range(36):
             ctx.restore();
         }
 
+        function drawGrid() {
+            const width = canvas.width;
+            const height = canvas.height;
+            
+            // Если сетка отключена, ничего не рисуем
+            if (gridType === 'none') return;
+            
+            if (gridType === 'lines') {
+                // Рисуем линии сетки
+                ctx.strokeStyle = '#dddddd';
+                ctx.lineWidth = 0.5;
+                
+                ctx.beginPath();
+                // Вертикальные линии
+                for (let x = 0; x <= width; x += window.pixelSize) {
+                    ctx.moveTo(x, 0);
+                    ctx.lineTo(x, height);
+                }
+                // Горизонтальные линии
+                for (let y = 0; y <= height; y += window.pixelSize) {
+                    ctx.moveTo(0, y);
+                    ctx.lineTo(width, y);
+                }
+                ctx.stroke();
+            } else if (gridType === 'dots') {
+                // Рисуем точки в местах пересечения линий сетки
+                ctx.fillStyle = '#aaaaaa'; // Более яркий цвет для точек
+                
+                // Определяем размер точки в зависимости от размера холста
+                let dotSize = 1;
+                if (window.pixelSize >= 10) dotSize = 1.5;
+                else if (window.pixelSize >= 5) dotSize = 1.2;
+                
+                for (let x = 0; x <= width; x += window.pixelSize) {
+                    for (let y = 0; y <= height; y += window.pixelSize) {
+                        ctx.beginPath();
+                        ctx.arc(x, y, dotSize, 0, 2 * Math.PI);
+                        ctx.fill();
+                    }
+                }
+            }
+            
+            // Возвращаем стандартную толщину линии
+            ctx.lineWidth = 1;
+        }
+
+        function updateGrid() {
+            gridType = document.getElementById('gridType').value;
+            resetCanvas();
+        }
+
+        // Определяем JavaScript функции для управления черепашкой
+        window.turtleForward = (distance) => {
+            // distance - это количество шагов черепашки
+            // Каждый шаг равен одной клетке сетки (pixelSize пикселей)
+            const pixelDistance = distance * window.pixelSize;
+            
+            const newX = turtleState.x + pixelDistance * Math.cos(turtleState.angle * Math.PI / 180);
+            const newY = turtleState.y + pixelDistance * Math.sin(turtleState.angle * Math.PI / 180);
+            
+            if (turtleState.isPenDown) {
+                ctx.beginPath();
+                ctx.moveTo(turtleState.x, turtleState.y);
+                ctx.lineTo(newX, newY);
+                ctx.strokeStyle = turtleState.color;
+                ctx.lineWidth = turtleState.width;
+                ctx.stroke();
+            }
+            
+            turtleState.x = newX;
+            turtleState.y = newY;
+            
+            drawTurtle();
+        };
+
+        window.turtleBackward = (distance) => {
+            window.turtleForward(-distance);
+        };
+
+        window.turtleRight = (angle) => {
+            turtleState.angle += angle;
+            drawTurtle();
+        };
+
+        window.turtleLeft = (angle) => {
+            turtleState.angle -= angle;
+            drawTurtle();
+        };
+
+        window.turtlePenUp = () => {
+            turtleState.isPenDown = false;
+        };
+
+        window.turtlePenDown = () => {
+            turtleState.isPenDown = true;
+        };
+
+        window.turtleGoto = (x, y) => {
+            // Преобразуем координаты из системы координат turtle в координаты canvas
+            // x, y - это координаты в шагах черепашки (клетках сетки)
+            const canvasX = canvas.width / 2 + x * window.pixelSize;
+            const canvasY = canvas.height / 2 - y * window.pixelSize;
+            
+            if (turtleState.isPenDown) {
+                ctx.beginPath();
+                ctx.moveTo(turtleState.x, turtleState.y);
+                ctx.lineTo(canvasX, canvasY);
+                ctx.strokeStyle = turtleState.color;
+                ctx.lineWidth = turtleState.width;
+                ctx.stroke();
+            }
+            
+            turtleState.x = canvasX;
+            turtleState.y = canvasY;
+            
+            drawTurtle();
+        };
+
+        window.turtleSetHeading = (angle) => {
+            turtleState.angle = angle;
+            drawTurtle();
+        };
+
+        window.turtleHome = () => {
+            turtleState.x = canvas.width / 2;
+            turtleState.y = canvas.height / 2;
+            turtleState.angle = 0;
+            drawTurtle();
+        };
+
+        window.turtleCircle = (radius, extent, steps) => {
+            // radius - это радиус в шагах черепашки (клетках сетки)
+            const pixelRadius = radius * window.pixelSize;
+            
+            const fullCircle = 360;
+            const angleToTurn = extent ? extent : fullCircle;
+            const stepsToUse = steps ? steps : Math.max(Math.abs(Math.floor(angleToTurn)), 36);
+            const angleStep = angleToTurn / stepsToUse;
+            
+            // Сохраняем текущее положение и угол
+            const startX = turtleState.x;
+            const startY = turtleState.y;
+            const startAngle = turtleState.angle;
+            
+            // Поворачиваем на 90 градусов влево для начала рисования круга
+            turtleState.angle += 90;
+            
+            // Рисуем круг как многоугольник
+            for (let i = 0; i < stepsToUse; i++) {
+                const stepDistance = 2 * Math.PI * Math.abs(pixelRadius) / stepsToUse;
+                const newX = turtleState.x + stepDistance * Math.cos(turtleState.angle * Math.PI / 180);
+                const newY = turtleState.y + stepDistance * Math.sin(turtleState.angle * Math.PI / 180);
+                
+                if (turtleState.isPenDown) {
+                    ctx.beginPath();
+                    ctx.moveTo(turtleState.x, turtleState.y);
+                    ctx.lineTo(newX, newY);
+                    ctx.strokeStyle = turtleState.color;
+                    ctx.lineWidth = turtleState.width;
+                    ctx.stroke();
+                }
+                
+                turtleState.x = newX;
+                turtleState.y = newY;
+                turtleState.angle += angleStep * (radius > 0 ? 1 : -1);
+            }
+            
+            // Восстанавливаем угол
+            turtleState.angle = startAngle;
+            drawTurtle();
+        };
+
+        window.turtleDot = (size, color) => {
+            const dotSize = size || Math.max(turtleState.width + 4, 2);
+            const dotColor = color || turtleState.color;
+            
+            ctx.beginPath();
+            ctx.arc(turtleState.x, turtleState.y, dotSize / 2, 0, 2 * Math.PI);
+            ctx.fillStyle = dotColor;
+            ctx.fill();
+            
+            drawTurtle();
+        };
+
+        window.turtleColor = (color) => {
+            turtleState.color = color;
+        };
+
+        window.turtlePenSize = (width) => {
+            turtleState.width = width;
+        };
+
         async function setupTurtleModule() {
             // Создаем модуль turtle с безопасными функциями
             await pyodide.runPython(`
+                # Импортируем модуль js
+                import js
+                
                 class TurtleModule:
                     class Turtle:
                         def __init__(self):
@@ -377,7 +691,7 @@ for i in range(36):
                 sys.modules['turtle'] = TurtleModule
                 
                 # Ограничиваем доступные модули для безопасности
-                allowed_modules = {'turtle', 'math', 'random'}
+                allowed_modules = {'turtle', 'math', 'random', 'js'}
                 original_import = __import__
                 
                 def safe_import(name, *args, **kwargs):
@@ -387,125 +701,6 @@ for i in range(36):
                 
                 __builtins__.__import__ = safe_import
             `);
-            
-            // Определяем JavaScript функции для управления черепашкой
-            window.turtleForward = (distance) => {
-                const newX = turtleState.x + distance * Math.cos(turtleState.angle * Math.PI / 180);
-                const newY = turtleState.y + distance * Math.sin(turtleState.angle * Math.PI / 180);
-                
-                if (turtleState.isPenDown) {
-                    ctx.beginPath();
-                    ctx.moveTo(turtleState.x, turtleState.y);
-                    ctx.lineTo(newX, newY);
-                    ctx.strokeStyle = turtleState.color;
-                    ctx.lineWidth = turtleState.width;
-                    ctx.stroke();
-                }
-                
-                turtleState.x = newX;
-                turtleState.y = newY;
-                
-                drawTurtle();
-            };
-            
-            window.turtleBackward = (distance) => {
-                window.turtleForward(-distance);
-            };
-            
-            window.turtleRight = (angle) => {
-                turtleState.angle += angle;
-                drawTurtle();
-            };
-            
-            window.turtleLeft = (angle) => {
-                turtleState.angle -= angle;
-                drawTurtle();
-            };
-            
-            window.turtlePenUp = () => {
-                turtleState.isPenDown = false;
-            };
-            
-            window.turtlePenDown = () => {
-                turtleState.isPenDown = true;
-            };
-            
-            window.turtleGoto = (x, y) => {
-                // Преобразуем координаты из системы координат turtle в координаты canvas
-                const canvasX = canvas.width / 2 + x;
-                const canvasY = canvas.height / 2 - y;
-                
-                if (turtleState.isPenDown) {
-                    ctx.beginPath();
-                    ctx.moveTo(turtleState.x, turtleState.y);
-                    ctx.lineTo(canvasX, canvasY);
-                    ctx.strokeStyle = turtleState.color;
-                    ctx.lineWidth = turtleState.width;
-                    ctx.stroke();
-                }
-                
-                turtleState.x = canvasX;
-                turtleState.y = canvasY;
-                
-                drawTurtle();
-            };
-            
-            window.turtleSetHeading = (angle) => {
-                turtleState.angle = angle;
-                drawTurtle();
-            };
-            
-            window.turtleHome = () => {
-                turtleState.x = canvas.width / 2;
-                turtleState.y = canvas.height / 2;
-                turtleState.angle = 0;
-                drawTurtle();
-            };
-            
-            window.turtleCircle = (radius, extent, steps) => {
-                const fullCircle = 360;
-                const angleToTurn = extent ? extent : fullCircle;
-                const stepsToUse = steps ? steps : Math.max(Math.abs(Math.floor(angleToTurn)), 36);
-                const angleStep = angleToTurn / stepsToUse;
-                
-                // Сохраняем текущее положение и угол
-                const startX = turtleState.x;
-                const startY = turtleState.y;
-                const startAngle = turtleState.angle;
-                
-                // Поворачиваем на 90 градусов влево для начала рисования круга
-                turtleState.angle += 90;
-                
-                // Рисуем круг как многоугольник
-                for (let i = 0; i < stepsToUse; i++) {
-                    window.turtleForward(2 * Math.PI * Math.abs(radius) / stepsToUse);
-                    window.turtleRight(angleStep * (radius > 0 ? 1 : -1));
-                }
-                
-                // Восстанавливаем угол
-                turtleState.angle = startAngle;
-                drawTurtle();
-            };
-            
-            window.turtleDot = (size, color) => {
-                const dotSize = size || Math.max(turtleState.width + 4, 2);
-                const dotColor = color || turtleState.color;
-                
-                ctx.beginPath();
-                ctx.arc(turtleState.x, turtleState.y, dotSize / 2, 0, 2 * Math.PI);
-                ctx.fillStyle = dotColor;
-                ctx.fill();
-                
-                drawTurtle();
-            };
-            
-            window.turtleColor = (color) => {
-                turtleState.color = color;
-            };
-            
-            window.turtlePenSize = (width) => {
-                turtleState.width = width;
-            };
         }
 
         async function runCode() {
@@ -524,8 +719,8 @@ for i in range(36):
             try {
                 // Очистка предыдущего вывода
                 pyodide.runPython(`
-                    sys.stdout = io.StringIO()
-                    sys.stderr = io.StringIO()
+                    sys.stdout = StringIOWrapper()
+                    sys.stderr = StringIOWrapper()
                 `);
                 
                 // Выполнение кода
@@ -551,26 +746,91 @@ for i in range(36):
         }
 
         function resizeCanvas() {
-            const width = parseInt(document.getElementById('canvasWidth').value);
-            const height = parseInt(document.getElementById('canvasHeight').value);
+            const turtleSteps = parseInt(document.getElementById('canvasSize').value);
             
-            if (isNaN(width) || isNaN(height) || width < 100 || height < 100) {
-                alert('Пожалуйста, введите корректные размеры (минимум 100x100)');
+            if (isNaN(turtleSteps) || turtleSteps < 20) {
+                alert('Пожалуйста, выберите корректный размер холста');
                 return;
             }
             
-            canvas.width = width;
-            canvas.height = height;
+            // Устанавливаем размер холста в пикселях
+            // Для лучшей видимости используем увеличенный размер пикселя
+            let pixelMultiplier = 1;
+            if (turtleSteps <= 20) pixelMultiplier = 25;      // Для холста 20×20
+            else if (turtleSteps <= 50) pixelMultiplier = 10; // Для холста 50×50
+            else if (turtleSteps <= 100) pixelMultiplier = 5; // Для холста 100×100
+            
+            canvas.width = turtleSteps * pixelMultiplier;
+            canvas.height = turtleSteps * pixelMultiplier;
+            
+            // Обновляем размер пикселя для отрисовки
+            window.pixelSize = pixelMultiplier;
+            
+            // Масштабируем холст внутри контейнера
+            const containerSize = 500; // Фиксированный размер контейнера
+            if (canvas.width <= containerSize) {
+                canvas.style.width = canvas.width + 'px';
+                canvas.style.height = canvas.height + 'px';
+            } else {
+                canvas.style.width = containerSize + 'px';
+                canvas.style.height = containerSize + 'px';
+            }
+            
             resetCanvas();
         }
 
+        // Проверка на блокировщики скриптов
+        function checkScriptBlockers() {
+            const testScript = document.createElement('script');
+            testScript.src = 'https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js';
+            testScript.onload = function() {
+                console.log("Внешние скрипты загружаются нормально");
+            };
+            testScript.onerror = function() {
+                document.getElementById('errorMessage').textContent = 
+                    'Обнаружена блокировка внешних скриптов. Пожалуйста, отключите блокировщики скриптов для этой страницы.';
+                document.getElementById('errorMessage').style.display = 'block';
+            };
+            document.head.appendChild(testScript);
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
-            // Инициализация Pyodide
+            // Проверяем блокировщики скриптов
+            checkScriptBlockers();
+            
+            // Проверяем, загрузился ли Pyodide
+            if (typeof loadPyodide === 'undefined') {
+                console.error("Функция loadPyodide не найдена. Pyodide не загружен.");
+                document.getElementById('errorMessage').textContent = 
+                    'Не удалось загрузить Pyodide. Пожалуйста, проверьте подключение к интернету или используйте другой браузер.';
+                document.getElementById('errorMessage').style.display = 'block';
+                return;
+            }
+            
+            // Инициализация Pyodide с таймаутом
             document.getElementById('runButton').disabled = true;
             document.getElementById('runButton').textContent = 'Загрузка...';
             
+            // Добавим таймаут для обнаружения проблем с загрузкой
+            const loadingTimeout = setTimeout(() => {
+                if (document.getElementById('runButton').textContent === 'Загрузка...') {
+                    document.getElementById('errorMessage').textContent = 
+                        'Превышено время ожидания загрузки Pyodide. Проверьте подключение к интернету или попробуйте другой браузер.';
+                    document.getElementById('errorMessage').style.display = 'block';
+                    document.getElementById('runButton').textContent = 'Повторить загрузку';
+                    document.getElementById('runButton').disabled = false;
+                    
+                    document.getElementById('runButton').onclick = () => {
+                        document.getElementById('runButton').textContent = 'Загрузка...';
+                        document.getElementById('runButton').disabled = true;
+                        document.getElementById('errorMessage').style.display = 'none';
+                        initPyodide();
+                    };
+                }
+            }, 20000); // 20 секунд таймаут
+            
             initPyodide().then(() => {
-                document.getElementById('runButton').textContent = 'Запустить';
+                clearTimeout(loadingTimeout);
             });
             
             // Обработчики событий
@@ -579,6 +839,7 @@ for i in range(36):
                 resetCanvas();
             });
             document.getElementById('resizeButton').addEventListener('click', resizeCanvas);
+            document.getElementById('updateGridButton').addEventListener('click', updateGrid);
             
             // Обработчики для примеров кода
             document.querySelectorAll('.example-code').forEach(example => {
@@ -586,6 +847,14 @@ for i in range(36):
                     document.getElementById('codeEditor').value = example.textContent.trim();
                 });
             });
+            
+            // Устанавливаем начальный размер холста
+            const initialTurtleSteps = 20;
+            window.pixelSize = 25; // Начальный размер пикселя
+            canvas.width = initialTurtleSteps * window.pixelSize;
+            canvas.height = initialTurtleSteps * window.pixelSize;
+            canvas.style.width = canvas.width + 'px';
+            canvas.style.height = canvas.height + 'px';
         });
     </script>
 </body>
