@@ -37,6 +37,8 @@ title: "содержание"
 
 [задание 26: моделирование и обработка данных с использованием сортировки]({{ site.baseurl }}{% link _notes/26.md %})
 
+[задание 27: анализ данных]({{ site.baseurl }}{% link _notes/26.md %})
+
 [разные полезные функции]({{ site.baseurl }}{% link _notes/utils.md %})
 
 [симулятор работы с ip-адресами и масками]({{ site.baseurl }}{% link simulator/simulator.html %})
